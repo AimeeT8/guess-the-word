@@ -8,8 +8,23 @@ const messageForGuesses = document.querySelector(".message");
 const playAgainButton = document.querySelector(".play-again");
 
 //"magnolia" is the starting word to test the game
-const word = "magnolia";
+let word = "magnolia";
 const guessedLetters = [];
+let remainingGuesses = 8;
+
+const getWord = async function() {
+    const res = await fetch("https://gist.githubusercontent.com/skillcrush-curriculum/7061f1d4d3d5bfe47efbfbcfe42bf57e/raw/5ffc447694486e7dea686f34a6c085ae371b43fe/words.txt");
+    const words = await res.text();  //using .text() instead of .json()
+    //console.log(words);
+    const wordArray = words.split("\n");
+    //console.log(wordArray);
+    const randomIndex = Math.floor(Math.random() * wordArray.length);
+    word = wordArray[randomIndex].trim();
+    placeHolder(word);
+    
+};
+getWord();
+
 
 // use an array then join it back to a string
 const placeHolder = function (word) {
@@ -21,7 +36,7 @@ const placeHolder = function (word) {
     wordInProgress.innerText = holderLetters.join("");
     
 };
-placeHolder(word);
+
 
 guessButton.addEventListener("click", function (e) {
     //this prevents the default behavior of clicking a button, the form submitting and then reloading the page.
@@ -66,6 +81,7 @@ const makeGuess = function (guess) {
     } else {
         guessedLetters.push(guess);
         console.log(guessedLetters);
+        updateGuesses(guess);
         updatePage();
         updateWord(guessedLetters);
     }
@@ -101,9 +117,33 @@ const updateWord = function(guessedLetters) {
 const wonTheGame = function() {
     if (word.toUpperCase() === wordInProgress.innerText) {
         messageForGuesses.classList.add("win");
-        messageForGuesses.innerHTML =  `<p class="highlight">You guessed correct the word! Congrats!</p>`;
+        messageForGuesses.innerHTML =  `<p class="highlight">You guessed the correct word! Congratulations!</p>`;
     }
 };
+
+const updateGuesses = function (guess) {
+    const upperWord = word.toUpperCase();
+    if (!upperWord.includes(guess)) {
+        messageForGuesses.innerText = `Sorry, the word has no ${guess}.`;
+        remainingGuesses -= 1;
+    } else {
+        messageForGuesses.innerText = `Good guess! The word has the letter ${guess}`;
+        remainingGuesses -= 1;  //I added this
+    }
+
+    if (remainingGuesses === 0) {
+        messageForGuesses.innerHTML = `Game Over! The word was <span class="highlight">${word}</span>.`;
+
+    } else if (remainingGuesses === 1) {
+        remainingGuessSpan.innerText = `${remainingGuesses} guess`;
+    } else {
+        remainingGuessSpan.innerText = `${remainingGuesses} guesses`;
+    }
+       
+};
+
+
+
 
 
 
