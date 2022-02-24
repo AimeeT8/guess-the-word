@@ -1,4 +1,4 @@
-const guess = document.querySelector(".guessed-letters");
+const guessLetElement = document.querySelector(".guessed-letters");
 const guessButton = document.querySelector(".guess");
 const textInput = document.querySelector(".letter");
 const wordInProgress = document.querySelector(".word-in-progress");
@@ -66,9 +66,43 @@ const makeGuess = function (guess) {
     } else {
         guessedLetters.push(guess);
         console.log(guessedLetters);
+        updatePage();
+        updateWord(guessedLetters);
     }
-    
+};
 
+const updatePage = function () {
+    guessLetElement.innerHTML = "";
+    for (const letter of guessedLetters) {
+        const li = document.createElement("li");
+        li.innerText = letter; 
+        guessLetElement.append(li);
+    }
+};
+
+const updateWord = function(guessedLetters) {
+    const wordUpper = word.toUpperCase();
+    const wordArray = wordUpper.split("");
+    const revealLetter = [];
+    for (const letter of wordArray) {
+    if (guessedLetters.includes(letter)) {
+        revealLetter.push(letter.toUpperCase());
+
+    } else {
+        revealLetter.push("●");
+    }
+    }
+    //console.log(revealLetter);
+    wordInProgress.innerText = revealLetter.join("");
+    wonTheGame();
+
+};
+
+const wonTheGame = function() {
+    if (word.toUpperCase() === wordInProgress.innerText) {
+        messageForGuesses.classList.add("win");
+        messageForGuesses.innerHTML =  `<p class="highlight">You guessed correct the word! Congrats!</p>`;
+    }
 };
 
 
